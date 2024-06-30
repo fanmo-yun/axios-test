@@ -1,9 +1,12 @@
 import argparse
 import flask
 from person import Person
+from flask_cors import CORS
 from flask import jsonify, request
 
 app = flask.Flask("axios-test")
+
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 
 @app.get('/')
@@ -11,30 +14,30 @@ def index():
     return 'axios-test\n'
 
 
-@app.get('/version')
+@app.get('/api/version')
 def version():
     return '1.0.0\n'
 
 
-@app.get('/get/json/v1')
+@app.get('/api/get/json/v1')
 def jsonv1():
     p = Person()
     return jsonify(p.jsonformat())
 
 
-@app.get('/get/json/v2')
+@app.get('/api/get/json/v2')
 def jsonv2():
     data = [Person().jsonformat() for _ in range(0, 50)]
     return jsonify(data)
 
 
-@app.get('/get/json/v3')
+@app.get('/api/get/json/v3')
 def jsonv3():
     data = [Person().jsonformat() for _ in range(0, 100)]
     return jsonify(data)
 
 
-@app.get('/get/json/v4')
+@app.get('/api/get/json/v4')
 def jsonv4():
     num = request.args.get("num")
     if num is None or num == "":
@@ -51,7 +54,7 @@ def jsonv4():
         }), 400
 
 
-@app.post("/post/v1")
+@app.post("/api/post/v1")
 def postv1():
     form_data = request.form.to_dict()
     if not form_data:
@@ -64,4 +67,5 @@ parser.add_argument("--ip", type=str, default="127.0.0.1")
 parser.add_argument("--port", type=int, default=3333)
 args = parser.parse_args()
 
-app.run(host=args.ip, port=args.port, debug=True)
+if __name__ == "__main__":
+    app.run(host=args.ip, port=args.port, debug=True)
